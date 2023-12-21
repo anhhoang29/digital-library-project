@@ -1,0 +1,66 @@
+version: 3.8
+
+volume:
+  nginx_proxy_manager_data:
+  letsencrypt:
+  mysql:
+
+services:
+  backend:
+    build:
+      dockerfile: ./digital-library-be/Dockerfile
+    environment:
+      DATABASE_HOST: ${MYSQL_HOST}
+      DATABASE_PORT: ${MYSQL_PORT}
+      DATABASE_SCHEMA: ${MYSQL_DATABASE}
+      DATABASE_USERNAME: ${MYSQL_USER}
+      DATABASE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      CLIENT_ID: ${CLIENT_ID}
+      CLIENT_SECRET: ${CLIENT_SECRET}
+      SECRET_KEY: ${SECRET_KEY}
+      BUCKET_NAME: ${BUCKET_NAME}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      SERVICE_ACCOUNT: ${SERVICE_ACCOUNT}
+      GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
+  frontend:
+    build:
+      dockerfile: ./digital-library-fe/Dockerfile
+    environment:
+      REACT_APP_FE_URL: ${REACT_APP_FE_URL}
+      REACT_APP_API_URL: ${REACT_APP_API_URL}
+
+  mysql_db:
+    build:
+      context: ./.build/mysql
+    volumes:
+        - mysql:/var/lib/mysql
+    environment:
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+        # - "127.0.0.1:3307:3306"
+        - "3307:3306"
+
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:2.9.22
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      # - "127.0.0.1:81:81"
+      - "81:81"
+      - "443:443"
+    volumes:
+      - nginx_proxy_manager_data:/data
+      - letsencrypt:/etc/letsencrypt
+    depends_on:
+      - frontend
+      - backend
+      - mysql_db
+
+
+
+
+
+
+
+

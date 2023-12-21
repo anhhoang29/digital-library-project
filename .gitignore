@@ -1,0 +1,56 @@
+### Java server
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+.env
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+### VS Code ###
+.vscode/
+
+# Client ReacJS
+/digital-library-fe/node_modules
+# dependencies
+/digital-library-fe/.pnp
+/digital-library-fe.pnp.js
+# testing
+/digital-library-fe/coverage
+# production
+/digital-library-fe/build
+# misc
+/digital-library-fe/.DS_Store
+/digital-library-fe/.env.local
+/digital-library-fe/.env.development.local
+/digital-library-fe/.env.test.local
+/digital-library-fe/.env.production.local
+/digital-library-fe/npm-debug.log*
+/digital-library-fe/yarn-debug.log*
+/digital-library-fe/yarn-error.log*
+/digital-library-fe/.env
+
+# nodejs server
+/nodejs-server/node_modules
+/nodejs-server/dist
+*.pem
