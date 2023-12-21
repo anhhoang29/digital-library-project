@@ -11,10 +11,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -36,8 +38,9 @@ public class FieldController {
             description = "Trả về danh sách tất cả lĩnh vực cho admin quản lý")
     @GetMapping("/all")
     public ResponseEntity<?> getAllFields(@RequestParam(defaultValue = "0") int page,
-                                          @RequestParam(defaultValue = "20") int size) {
-        Pageable pageable = PageRequest.of(page, size);
+                                          @RequestParam(defaultValue = "50") int size) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "updatedAt");
+        Pageable pageable = PageRequest.of(page, size, sort);
         List<Field> fields = fieldService.findAll(pageable).getContent();
         List<FieldResponseModel> fieldResponseModels = fields.stream()
                 .map(field -> modelMapper.map(field, FieldResponseModel.class))
@@ -68,10 +71,27 @@ public class FieldController {
                 .build());
     }
 
+    @Operation(summary = "Lấy một lĩnh vực",
+            description = "Trả về thông tin lĩnh vực")
+    @GetMapping("/{fieldId}")
+    public ResponseEntity<?> getField(@PathVariable UUID fieldId) {
+        Field field = fieldService.findById(fieldId).orElseThrow(() -> new RuntimeException("Field not found"));
+        FieldResponseModel fieldResponseModel = modelMapper.map(field, FieldResponseModel.class);
+        return ResponseEntity.ok(ResponseModel.builder()
+                .status(200)
+                .error(false)
+                .message("Get field successfully")
+                .data(fieldResponseModel)
+                .build());
+    }
+
     @Operation(summary = "Tạo lĩnh vực mới",
             description = "Tạo một lĩnh vực tài liệu mới")
     @PostMapping
     public ResponseEntity<?> createField(@RequestBody FieldRequestModel fieldRequestModel) {
+        Optional<Field> fieldOptional = fieldService.findByFieldName(fieldRequestModel.getFieldName());
+        if (fieldOptional.isPresent())
+            throw new RuntimeException("Field already exists");
         Field field = modelMapper.map(fieldRequestModel, Field.class);
         field.setSlug(slugGenerator.generateSlug(field.getFieldName(), false));
         field = fieldService.save(field);
@@ -90,7 +110,12 @@ public class FieldController {
     public ResponseEntity<?> updateField(@PathVariable UUID fieldId,
                                          @RequestBody FieldRequestModel fieldRequestModel) {
         Field field = fieldService.findById(fieldId).orElseThrow(() -> new RuntimeException("Field not found"));
-        modelMapper.map(fieldRequestModel, field);
+        Optional<Field> fieldOptional = fieldService.findByFieldName(fieldRequestModel.getFieldName());
+        if (fieldOptional.isPresent())
+            if (fieldOptional.get().getFieldId() != field.getFieldId())
+                throw new RuntimeException("Field already exists");
+
+        field.setFieldName(fieldRequestModel.getFieldName());
         field.setSlug(slugGenerator.generateSlug(field.getFieldName(), false));
         field = fieldService.save(field);
         FieldResponseModel newFieldResponseModel = modelMapper.map(field, FieldResponseModel.class);
@@ -109,12 +134,12 @@ public class FieldController {
         Field field = fieldService.findById(fieldId).orElseThrow(() -> new RuntimeException("Field not found"));
         String message = "";
         if (field.getDocuments().isEmpty()) {
-            message = "Delete field \"" + field.getFieldName() + "\" from system successfully";
+            message = "Delete field from system successfully";
             fieldService.deleteById(fieldId);
         } else {
             field.setDeleted(true);
             fieldService.save(field);
-            message = "Unable to delete " + field.getFieldName() + " as there are documents linked to it. Status changed to deleted";
+            message = "Unable to delete this field as there are documents linked to it. Status changed to deleted";
         }
         return ResponseEntity.ok(ResponseModel.builder()
                 .status(200)

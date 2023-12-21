@@ -14,7 +14,13 @@ import java.util.UUID;
 public interface IDocumentRepository extends JpaRepository<Document, UUID> {
     Optional<Document> findBySlug(String slug);
 
+    Page<Document> findByDocNameContaining(String docName, Pageable pageable);
+
+    Page<Document> findByDocNameAndOrganizationContaining(String docName, Organization organization, Pageable pageable);
+
     Page<Document> findAllByOrganization(Organization organization, Pageable pageable);
+
+    Page<Document> findByUserUploaded(User user, Pageable pageable);
 
     Page<Document> findByUserUploadedAndIsDeleted(User user, boolean isDeleted, Pageable pageable);
 
@@ -24,95 +30,209 @@ public interface IDocumentRepository extends JpaRepository<Document, UUID> {
 
     @Query("SELECT d FROM Document d WHERE d.isDeleted = false " +
             "AND d.verifiedStatus = 1 " +
-            "AND (d.isInternal = false OR (d.isInternal = true AND d.organization = ?1))")
-    Page<Document> findByInternal(Organization userOrganization, Pageable pageable);
-
-    @Query("SELECT d FROM Document d WHERE d.isDeleted = false " +
-            "AND d.verifiedStatus = 1 " +
-            "AND d.category = ?1 " +
-            "AND (d.isInternal = false OR (d.isInternal = true AND d.organization = ?2))")
-    Page<Document> findByCategory(Category category, Organization userOrganization, Pageable pageable);
-
-    @Query("SELECT d FROM Document d WHERE d.isDeleted = false " +
-            "AND d.verifiedStatus = 1 " +
-            "AND d.field = ?1 " +
-            "AND (d.isInternal = false OR (d.isInternal = true AND d.organization = ?2))")
-    Page<Document> findByField(Field field, Organization userOrganization, Pageable pageable);
-
-    @Query("SELECT d FROM Document d WHERE d.isDeleted = false " +
-            "AND d.verifiedStatus = 1 " +
-            "AND d.organization = ?1 " +
-            "AND (d.isInternal = false OR (d.isInternal = true AND d.organization = ?2))")
-    Page<Document> findByOrganization(Organization organization, Organization userOrganization, Pageable pageable);
-
-    @Query("SELECT d FROM Document d WHERE d.isDeleted = false " +
-            "AND d.verifiedStatus = 1 " +
             "AND d.userUploaded = ?1 " +
             "AND (d.isInternal = false OR (d.isInternal = true AND d.organization = ?2))")
     Page<Document> findByUserUploaded(User user, Organization userOrganization, Pageable pageable);
 
-    @Query("SELECT d FROM Document d WHERE d.isDeleted = false " +
-            "AND d.verifiedStatus = 1 " +
-            "AND d.category = ?1 " +
-            "AND d.field = ?2 " +
-            "AND (d.isInternal = false OR (d.isInternal = true AND d.organization = ?3))")
-    Page<Document> findByCategoryAndField(Category category, Field field, Organization userOrganization, Pageable pageable);
+    @Query("SELECT d FROM Document d " +
+            "WHERE (d.isDeleted = :isDeleted OR :isDeleted IS NULL) " +
+            "AND (d.isInternal = :isInternal OR :isInternal IS NULL) " +
+            "AND (d.verifiedStatus = :verifiedStatus OR :verifiedStatus IS NULL) " +
+            "AND (d.category = :category OR :category IS NULL) " +
+            "AND (d.field = :field OR :field IS NULL) " +
+            "AND (d.organization = :organization OR :organization IS NULL)")
+    Page<Document> findAllDocumentsWithFilter(
+            Boolean isDeleted,
+            Boolean isInternal,
+            Integer verifiedStatus,
+            Category category,
+            Field field,
+            Organization organization,
+            Pageable pageable
+    );
 
     @Query("SELECT d FROM Document d WHERE d.isDeleted = false " +
             "AND d.verifiedStatus = 1 " +
-            "AND d.category = ?1 " +
-            "AND d.organization = ?2 " +
-            "AND (d.isInternal = false OR (d.isInternal = true AND d.organization = ?3))")
-    Page<Document> findByCategoryAndOrganization(Category category, Organization organization, Organization userOrganization, Pageable pageable);
+            "AND (d.category = :category OR :category IS NULL) " +
+            "AND (d.field = :field OR :field IS NULL) " +
+            "AND (d.organization = :organization OR :organization IS NULL) " +
+            "AND d.category.isDeleted = false " +
+            "AND d.field.isDeleted = false " +
+            "AND d.organization.isDeleted = false " +
+            "AND (d.isInternal = false OR (d.isInternal = true AND d.organization = :userOrganization))")
+    Page<Document> findDocumentsForStudents(
+            Category category,
+            Field field,
+            Organization organization,
+            Organization userOrganization,
+            Pageable pageable
+    );
 
     @Query("SELECT d FROM Document d WHERE d.isDeleted = false " +
             "AND d.verifiedStatus = 1 " +
-            "AND d.field = ?1 " +
-            "AND d.organization = ?2 " +
-            "AND (d.isInternal = false OR (d.isInternal = true AND d.organization = ?3))")
-    Page<Document> findByFieldAndOrganization(Field field, Organization organization, Organization userOrganization, Pageable pageable);
+            "AND (d.category = :category OR :category IS NULL) " +
+            "AND (d.field = :field OR :field IS NULL) " +
+            "AND (d.organization = :organization OR :organization IS NULL) " +
+            "AND d.category.isDeleted = false " +
+            "AND d.field.isDeleted = false " +
+            "AND d.organization.isDeleted = false " +
+            "AND (d.isInternal = false)")
+    Page<Document> findDocumentsForGuests(
+            Category category,
+            Field field,
+            Organization organization,
+            Pageable pageable
+    );
 
     @Query("SELECT d FROM Document d WHERE d.isDeleted = false " +
             "AND d.verifiedStatus = 1 " +
-            "AND d.category = ?1 " +
-            "AND d.field = ?2 " +
-            "AND d.organization = ?3 " +
-            "AND (d.isInternal = false OR (d.isInternal = true AND d.organization = ?4))")
-    Page<Document> findByCategoryAndFieldAndOrganization(Category category, Field field, Organization organization, Organization userOrganization, Pageable pageable);
+            "AND (d.category = :category OR :category IS NULL) " +
+            "AND (d.field = :field OR :field IS NULL) " +
+            "AND (d.organization = :organization OR :organization IS NULL) " +
+            "AND d.category.isDeleted = false " +
+            "AND d.field.isDeleted = false " +
+            "AND d.organization.isDeleted = false " +
+            "AND (d.isInternal = false OR (d.isInternal = true AND d.organization = :userOrganization)) " +
+            "AND (LOWER(d.docName) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(d.docIntroduction) LIKE LOWER(CONCAT('%', :query, '%')))")
+    Page<Document> searchDocumentsForStudents(
+            Category category,
+            Field field,
+            Organization organization,
+            Organization userOrganization,
+            String query,
+            Pageable pageable
+    );
 
-    Page<Document> findByVerifiedStatusAndIsInternalAndIsDeleted(int VerifiedStatus, boolean isInternal, boolean isDeleted, Pageable pageable);
+    @Query("SELECT d FROM Document d WHERE d.isDeleted = false " +
+            "AND d.verifiedStatus = 1 " +
+            "AND (d.category = :category OR :category IS NULL) " +
+            "AND (d.field = :field OR :field IS NULL) " +
+            "AND (d.organization = :organization OR :organization IS NULL) " +
+            "AND d.category.isDeleted = false " +
+            "AND d.field.isDeleted = false " +
+            "AND d.organization.isDeleted = false " +
+            "AND (d.isInternal = false) " +
+            "AND (LOWER(d.docName) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(d.docIntroduction) LIKE LOWER(CONCAT('%', :query, '%')))")
+    Page<Document> searchDocumentsForGuests(
+            Category category,
+            Field field,
+            Organization organization,
+            String query,
+            Pageable pageable
+    );
 
-    Page<Document> findByCategoryAndVerifiedStatusAndIsInternalAndIsDeleted(Category category, int VerifiedStatus, boolean isInternal, boolean isDeleted, Pageable pageable);
+    @Query("SELECT d FROM Document d " +
+            "WHERE (d.isDeleted = :isDeleted OR :isDeleted IS NULL) " +
+            "AND (d.isInternal = :isInternal OR :isInternal IS NULL) " +
+            "AND (d.verifiedStatus = :verifiedStatus OR :verifiedStatus IS NULL) " +
+            "AND (d.category = :category OR :category IS NULL) " +
+            "AND (d.field = :field OR :field IS NULL) " +
+            "AND (d.organization = :organization OR :organization IS NULL) " +
+            "AND (LOWER(d.docName) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(d.docIntroduction) LIKE LOWER(CONCAT('%', :query, '%')))")
+    Page<Document> searchWithAllDocuments(
+            Boolean isDeleted,
+            Boolean isInternal,
+            Integer verifiedStatus,
+            Category category,
+            Field field,
+            Organization organization,
+            String query,
+            Pageable pageable
+    );
 
-    Page<Document> findByFieldAndVerifiedStatusAndIsInternalAndIsDeleted(Field field, int VerifiedStatus, boolean isInternal, boolean isDeleted, Pageable pageable);
+    @Query("SELECT d FROM Document d " +
+            "WHERE (d.isDeleted = :isDeleted OR :isDeleted IS NULL) " +
+            "AND (d.isInternal = :isInternal OR :isInternal IS NULL) " +
+            "AND (d.verifiedStatus = :verifiedStatus OR :verifiedStatus IS NULL) " +
+            "AND (d.category = :category OR :category IS NULL) " +
+            "AND (d.field = :field OR :field IS NULL) " +
+            "AND (d.organization = :organization OR :organization IS NULL) " +
+            "AND MONTH(d.uploadedAt) = MONTH(CURRENT_DATE) AND YEAR(d.uploadedAt) = YEAR(CURRENT_DATE)")
+    Page<Document> findLatestDocuments(
+            Boolean isDeleted,
+            Boolean isInternal,
+            Integer verifiedStatus,
+            Category category,
+            Field field,
+            Organization organization,
+            Pageable pageable
+    );
 
-    Page<Document> findByOrganizationAndVerifiedStatusAndIsInternalAndIsDeleted(Organization organization, int VerifiedStatus, boolean isInternal, boolean isDeleted, Pageable pageable);
+    @Query("SELECT d FROM Document d WHERE d.isDeleted = false " +
+            "AND (d.verifiedStatus = :verifiedStatus OR :verifiedStatus IS NULL) " +
+            "AND (d.category = :category OR :category IS NULL) " +
+            "AND (d.field = :field OR :field IS NULL) " +
+            "AND (d.organization = :organization OR :organization IS NULL) " +
+            "AND d.category.isDeleted = false " +
+            "AND d.field.isDeleted = false " +
+            "AND d.organization.isDeleted = false " +
+            "AND d.userUploaded = :userUploaded " +
+            "AND (LOWER(d.docName) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(d.docIntroduction) LIKE LOWER(CONCAT('%', :query, '%')))")
+    Page<Document> findUploadedDocuments(
+            Integer verifiedStatus,
+            Category category,
+            Field field,
+            Organization organization,
+            User userUploaded,
+            String query,
+            Pageable pageable
+    );
 
-    Page<Document> findByUserUploadedAndVerifiedStatusAndIsInternalAndIsDeleted(User user, int VerifiedStatus, boolean isInternal, boolean isDeleted, Pageable pageable);
+    @Query("SELECT d FROM Document d WHERE d.isDeleted = false " +
+            "AND (d.verifiedStatus = 1) " +
+            "AND (d.isInternal = false OR (d.isInternal = true AND d.organization = :userOrganization)) " +
+            "AND (d.category = :category OR :category IS NULL) " +
+            "AND (d.field = :field OR :field IS NULL) " +
+            "AND d.category.isDeleted = false " +
+            "AND d.field.isDeleted = false " +
+            "AND d.organization.isDeleted = false " +
+            "AND d.userUploaded = :userUploaded " +
+            "AND (LOWER(d.docName) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(d.docIntroduction) LIKE LOWER(CONCAT('%', :query, '%')))")
+    Page<Document> findUploadedDocumentsByUserForStudent(
+            Category category,
+            Field field,
+            Organization userOrganization,
+            User userUploaded,
+            String query,
+            Pageable pageable);
 
-    Page<Document> findByCategoryAndFieldAndVerifiedStatusAndIsInternalAndIsDeleted(Category category, Field field, int VerifiedStatus, boolean isInternal, boolean isDeleted, Pageable pageable);
+    @Query("SELECT d FROM Document d WHERE d.isDeleted = false " +
+            "AND (d.verifiedStatus = 1) " +
+            "AND (d.isInternal = false) " +
+            "AND (d.category = :category OR :category IS NULL) " +
+            "AND (d.field = :field OR :field IS NULL) " +
+            "AND d.category.isDeleted = false " +
+            "AND d.field.isDeleted = false " +
+            "AND d.organization.isDeleted = false " +
+            "AND d.userUploaded = :userUploaded " +
+            "AND (LOWER(d.docName) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(d.docIntroduction) LIKE LOWER(CONCAT('%', :query, '%')))")
+    Page<Document> findUploadedDocumentsByUserForGuest(
+            Category category,
+            Field field,
+            User userUploaded,
+            String query,
+            Pageable pageable);
 
-    Page<Document> findByCategoryAndOrganizationAndVerifiedStatusAndIsInternalAndIsDeleted(Category category, Organization organization, int VerifiedStatus, boolean isInternal, boolean isDeleted, Pageable pageable);
+    @Query("SELECT s.document FROM Save s " +
+            "JOIN s.document d " +
+            "WHERE s.document = d " +
+            "AND s.user = :user " +
+            "AND s.isSaved = true " +
+            "AND (d.isInternal = false OR d.organization = s.user.organization) " +
+            "AND d.isDeleted = false " +
+            "AND d.category.isDeleted = false " +
+            "AND d.field.isDeleted = false " +
+            "AND d.organization.isDeleted = false " +
+            "AND (LOWER(d.docName) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(d.docIntroduction) LIKE LOWER(CONCAT('%', :query, '%')))"
+    )
+    Page<Document> findLikedDocuments(User user, String query, Pageable pageable);
 
-    Page<Document> findByFieldAndOrganizationAndVerifiedStatusAndIsInternalAndIsDeleted(Field field, Organization organization, int VerifiedStatus, boolean isInternal, boolean isDeleted, Pageable pageable);
+    long countByVerifiedStatus(int verifiedStatus);
 
-    Page<Document> findByCategoryAndFieldAndOrganizationAndVerifiedStatusAndIsInternalAndIsDeleted(Category category, Field field, Organization organization, int VerifiedStatus, boolean isInternal, boolean isDeleted, Pageable pageable);
+    long countByVerifiedStatusAndOrganization(int verifiedStatus, Organization organization);
 
+    long count();
 
-//    Page<Document> findByCategory(Category category, boolean isDeleted, Pageable pageable);
-//
-//    Page<Document> findByField(Field field, boolean isDeleted, Pageable pageable);
-//
-//    Page<Document> findByOrganization(Organization organization, boolean isDeleted, Pageable pageable);
-//
-//    Page<Document> findByUserUploadedAndIsDeleted(User user, boolean isDeleted, Pageable pageable);
-//
-//    Page<Document> findByCategoryAndFieldAndIsDeleted(Category category, Field field, boolean isDeleted, Pageable pageable);
-//
-//    Page<Document> findByCategoryAndOrganizationAndIsDeleted(Category category, Organization organization, boolean isDeleted, Pageable pageable);
-//
-//    Page<Document> findByFieldAndOrganizationAndIsDeleted(Field field, Organization organization, boolean isDeleted, Pageable pageable);
-//
-//    Page<Document> findByCategoryAndFieldAndOrganizationAndIsDeleted(Category category, Field field, Organization organization, boolean isDeleted, Pageable pageable);
+    long countByOrganization(Organization organization);
 
 }

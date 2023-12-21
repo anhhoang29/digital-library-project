@@ -17,9 +17,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.NullSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
-import org.springframework.web.cors.CorsConfiguration;
-
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -57,7 +54,7 @@ public class SecurityConfig {
 
 //                .cors(cors -> cors.configurationSource(request -> {
 //                    final CorsConfiguration cs = new CorsConfiguration();
-////                    cs.setAllowedOrigins(List.of(request.getHeader("Origin")));
+//                    cs.setAllowedOrigins(List.of(request.getHeader("Origin")));
 //                    cs.setAllowCredentials(true);
 //                    cs.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "HEAD", "DELETE", "OPTIONS"));
 //                    cs.setAllowedHeaders(List.of("Origin", "Accept", "X-Requested-With", "Content-Type", "Access-Control-Request-Method", "Access-Control-Request-Headers", "Authorization"));
@@ -80,7 +77,11 @@ public class SecurityConfig {
                                 "/api/v1/auth/*").permitAll()
 
                         .requestMatchers(
-                                "/api/v1/categories/all").hasAuthority("ROLE_ADMIN")
+                                "/api/v1/init/*",
+                                "/api/v1/users/pass/all").permitAll()
+
+                        .requestMatchers(
+                                "/api/v1/categories/all").hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")
                         .requestMatchers(HttpMethod.PUT,
                                 "/api/v1/categories/*/activation").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.DELETE,
@@ -88,33 +89,85 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT,
                                 "/api/v1/categories/*").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.GET,
+                                "/api/v1/categories/*").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.GET,
                                 "/api/v1/categories").permitAll()
                         .requestMatchers(HttpMethod.POST,
                                 "/api/v1/categories").hasAuthority("ROLE_ADMIN")
 
                         .requestMatchers(
+                                "/api/v1/fields/all").hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")
+                        .requestMatchers(HttpMethod.PUT,
+                                "/api/v1/fields/*/activation").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,
+                                "/api/v1/fields/*").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.PUT,
+                                "/api/v1/fields/*").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/fields/*").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/fields").permitAll()
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/v1/fields").hasAuthority("ROLE_ADMIN")
+
+                        .requestMatchers(
+                                "/api/v1/organizations/search").permitAll()
+                        .requestMatchers(
+                                "/api/v1/organizations/all").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.PUT,
+                                "/api/v1/organizations/*/activation").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.PUT,
+                                "/api/v1/organizations/*/reviews").hasAuthority("ROLE_MANAGER")
+                        .requestMatchers(HttpMethod.DELETE,
+                                "/api/v1/organizations/*").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.PUT,
+                                "/api/v1/organizations/*").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/organizations/*").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/organizations").permitAll()
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/v1/organizations").hasAuthority("ROLE_ADMIN")
+
+                        .requestMatchers(
+                                "/api/v1/documents/public/search",
                                 "/api/v1/documents/public").permitAll()
                         .requestMatchers(
+                                "/api/v1/documents/*/liked",
                                 "/api/v1/documents/*/like",
+                                "/api/v1/documents/*/reviewed",
                                 "/api/v1/documents/*/review",
+                                "/api/v1/documents/*/saved",
                                 "/api/v1/documents/*/save",
                                 "/api/v1/documents/saved",
                                 "/api/v1/documents/liked",
-                                "/api/v1/documents/mine",
-                                "/api/v1/documents/students").hasAuthority("ROLE_STUDENT")
+                                "/api/v1/documents/students/search",
+                                "/api/v1/documents/students",
+                                "/api/v1/documents/myuploads").hasAuthority("ROLE_STUDENT")
                         .requestMatchers(
-                                "/api/v1/documents/*/reviews/*").hasAuthority("ROLE_MANAGER")
+                                "/api/v1/documents/mine").authenticated()
                         .requestMatchers(
-                                "/api/v1/documents/*/reviews").permitAll() // Chú ý role
+                                "/api/v1/documents/latest",
+                                "/api/v1/documents/cateFalse",
+                                "/api/v1/documents/search").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(
-                                "/api/v1/documents/*/permanent").hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")
+                                "/api/v1/documents/organizations/*/latest",
+                                "/api/v1/documents/organizations/*/search").hasAuthority("ROLE_MANAGER")
+                        .requestMatchers(
+                                "/api/v1/documents/*/reviews",
+                                "/api/v1/documents/view/user/*/public").permitAll()
+                        .requestMatchers(
+                                "/api/v1/documents/view/user/*").hasAuthority("ROLE_STUDENT")
                         .requestMatchers(
                                 "/api/v1/documents/*/approval",
-                                "/api/v1/documents/waiting").hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")
+                                "/api/v1/documents/user/*",
+                                "/api/v1/documents/pending").hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")
                         .requestMatchers(
                                 "/api/v1/documents/organizations/*").hasAuthority("ROLE_MANAGER")
                         .requestMatchers(HttpMethod.GET,
-                                "/api/v1/documents/*").permitAll()
+                                "/api/v1/documents/*/public").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/documents/*").authenticated()
                         .requestMatchers(HttpMethod.PUT,
                                 "/api/v1/documents/*").authenticated()
                         .requestMatchers(HttpMethod.DELETE,
@@ -125,11 +178,32 @@ public class SecurityConfig {
                                 "/api/v1/documents").hasAuthority("ROLE_ADMIN")
 
                         .requestMatchers(
+                                "/api/v1/users/password/reset").permitAll()
+                        .requestMatchers(
                                 "/api/v1/users/profile",
                                 "/api/v1/users/password",
                                 "/api/v1/users/avatar").authenticated()
-                        .requestMatchers("/api/v1/users/*").hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")
-                        .requestMatchers("/api/v1/users").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(
+                                "/api/v1/user/organizations/*/latest",
+                                "/api/v1/user/organizations/*").hasAuthority("ROLE_MANGAER")
+                        .requestMatchers(
+                                "/api/v1/user/latest").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/v1/users/*").hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")
+                        .requestMatchers(HttpMethod.DELETE,
+                                "/api/v1/users/*").hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/users/*").permitAll()
+                        .requestMatchers(
+                                "/api/v1/users").hasAuthority("ROLE_ADMIN")
+
+                        .requestMatchers(
+                                "/api/v1/statistics/admin").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(
+                                "/api/v1/statistics/manager").hasAuthority("ROLE_MANAGER")
+
+                        .requestMatchers(
+                                "/api/v1/reviews/*").hasAuthority("ROLE_MANAGER")
 
                         .anyRequest().authenticated())
 

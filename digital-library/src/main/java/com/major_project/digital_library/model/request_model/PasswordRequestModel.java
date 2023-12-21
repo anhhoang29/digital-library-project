@@ -18,5 +18,5 @@ public class PasswordRequestModel implements Serializable {
 
     private String newPassword;
 
-    private String verifiedPassword;
+    private String confirmPassword;
 }

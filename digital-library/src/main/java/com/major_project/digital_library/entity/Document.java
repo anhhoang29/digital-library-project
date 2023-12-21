@@ -2,8 +2,9 @@ package com.major_project.digital_library.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.sql.Timestamp;
@@ -11,7 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 
@@ -50,7 +52,7 @@ public class Document {
 
     private int totalFavorite;
 
-    private boolean isPrivate;
+    private double averageRating;
 
     private boolean isInternal;
 
@@ -79,13 +81,13 @@ public class Document {
     @JoinColumn(name = "fieldId")
     private Field field;
 
-    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Save> saves = new ArrayList<>();
 
-    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Favorite> favorites = new ArrayList<>();
 
-    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
 
     @PrePersist
@@ -103,4 +105,5 @@ public class Document {
     protected void onRemove() {
         isDeleted = true;
     }
+
 }

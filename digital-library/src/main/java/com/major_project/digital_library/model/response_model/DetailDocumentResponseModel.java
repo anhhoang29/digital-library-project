@@ -12,7 +12,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DocumentResponseModel implements Serializable {
+public class DetailDocumentResponseModel implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -44,9 +44,22 @@ public class DocumentResponseModel implements Serializable {
 
     private double averageRating;
 
+    private int totalReviews;
+
     private boolean isInternal;
 
     private String author;
 
     private String thumbnail;
+
+    private UserResponseModel userUploaded;
+
+    private UserResponseModel userVerified;
+
+    private OrganizationResponseModel organization;
+
+    private CategoryResponseModel category;
+
+    private FieldResponseModel field;
+
 }

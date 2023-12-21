@@ -2,47 +2,41 @@ package com.major_project.digital_library.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.sql.Timestamp;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 
 @Entity
-public class Review {
+public class VerificationCode {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.TIME)
-    private UUID reviewId;
+    private UUID id;
 
-    private int star;
+    @Column(length = 6)
+    private int code;
 
-    private String content;
+    private boolean isExpired = false;
 
     private Timestamp createdAt;
 
-    private Timestamp updatedAt;
+    private Timestamp expiredAt;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "userId")
     private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "docId")
-    private Document document;
 
     @PrePersist
     protected void onCreate() {
         createdAt = new Timestamp(System.currentTimeMillis());
-        updatedAt = new Timestamp(System.currentTimeMillis());
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = new Timestamp(System.currentTimeMillis());
+        expiredAt = new Timestamp(createdAt.getTime() + 15 * 60 * 1000);
     }
 }

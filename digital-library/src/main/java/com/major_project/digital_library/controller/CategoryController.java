@@ -11,10 +11,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -36,8 +38,9 @@ public class CategoryController {
             description = "Trả về danh sách tất cả danh mục cho admin quản lý")
     @GetMapping("/all")
     public ResponseEntity<?> getAllCategories(@RequestParam(defaultValue = "0") int page,
-                                              @RequestParam(defaultValue = "20") int size) {
-        Pageable pageable = PageRequest.of(page, size);
+                                              @RequestParam(defaultValue = "50") int size) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "updatedAt");
+        Pageable pageable = PageRequest.of(page, size, sort);
         List<Category> categories = categoryService.findAll(pageable).getContent();
         List<CategoryResponseModel> categoryResponseModels = categories.stream()
                 .map(category -> modelMapper.map(category, CategoryResponseModel.class))
@@ -68,10 +71,28 @@ public class CategoryController {
                 .build());
     }
 
+    @Operation(summary = "Lấy thông tin một danh mục",
+            description = "Trả về thông tin của một danh mục")
+    @GetMapping("/{categoryId}")
+    public ResponseEntity<?> getACategory(@PathVariable UUID categoryId) {
+        Category category = categoryService.findById(categoryId).orElseThrow(() -> new RuntimeException("Category not found"));
+        CategoryResponseModel vategoryResponseModel = modelMapper.map(category, CategoryResponseModel.class);
+        return ResponseEntity.ok(ResponseModel.builder()
+                .status(200)
+                .error(false)
+                .message("Get category successfully")
+                .data(vategoryResponseModel)
+                .build());
+    }
+
     @Operation(summary = "Tạo danh mục mới",
             description = "Tạo một danh mục tài liệu mới")
     @PostMapping
     public ResponseEntity<?> createCategory(@RequestBody CategoryRequestModel categoryRequestModel) {
+        Optional<Category> categoryOptional = categoryService.findByCategoryName(categoryRequestModel.getCategoryName());
+        if (categoryOptional.isPresent())
+            throw new RuntimeException("Category already exists");
+
         Category category = modelMapper.map(categoryRequestModel, Category.class);
         category.setSlug(slugGenerator.generateSlug(category.getCategoryName(), false));
         category = categoryService.save(category);
@@ -90,7 +111,13 @@ public class CategoryController {
     public ResponseEntity<?> updateCategory(@PathVariable UUID categoryId,
                                             @RequestBody CategoryRequestModel categoryRequestModel) {
         Category category = categoryService.findById(categoryId).orElseThrow(() -> new RuntimeException("Category not found"));
-        modelMapper.map(categoryRequestModel, category);
+
+        Optional<Category> categoryOptional = categoryService.findByCategoryName(categoryRequestModel.getCategoryName());
+        if (categoryOptional.isPresent())
+            if (category.getCategoryId() != categoryOptional.get().getCategoryId())
+                throw new RuntimeException("Category already exists");
+
+        category.setCategoryName(categoryRequestModel.getCategoryName());
         category.setSlug(slugGenerator.generateSlug(category.getCategoryName(), false));
         category = categoryService.save(category);
         CategoryResponseModel newCategoryResponseModel = modelMapper.map(category, CategoryResponseModel.class);
@@ -109,12 +136,12 @@ public class CategoryController {
         Category category = categoryService.findById(categoryId).orElseThrow(() -> new RuntimeException("Category not found"));
         String message = "";
         if (category.getDocuments().isEmpty()) {
-            message = "Delete category \"" + category.getCategoryName() + "\" from system successfully";
+            message = "Delete category from system successfully";
             categoryService.deleteById(categoryId);
         } else {
             category.setDeleted(true);
             categoryService.save(category);
-            message = "Unable to delete " + category.getCategoryName() + " as there are documents linked to it. Status changed to deleted";
+            message = "Unable to delete this category as there are documents linked to it. Status changed to deleted";
         }
         return ResponseEntity.ok(ResponseModel.builder()
                 .status(200)
