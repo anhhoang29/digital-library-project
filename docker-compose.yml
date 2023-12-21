@@ -1,6 +1,6 @@
-version: 3.8
+version: "3.8"
 
-volume:
+volumes:
   nginx_proxy_manager_data:
   letsencrypt:
   mysql:
@@ -15,13 +15,17 @@ services:
       DATABASE_SCHEMA: ${MYSQL_DATABASE}
       DATABASE_USERNAME: ${MYSQL_USER}
       DATABASE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      CLIENT_ID: ${CLIENT_ID}
-      CLIENT_SECRET: ${CLIENT_SECRET}
-      SECRET_KEY: ${SECRET_KEY}
-      BUCKET_NAME: ${BUCKET_NAME}
-      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
-      SERVICE_ACCOUNT: ${SERVICE_ACCOUNT}
-      GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
+      ACCESS_TOKEN_LIFE: ${ACCESS_TOKEN_LIFE}
+      API_KEY: ${API_KEY}
+      REFRESH_TOKEN_LIFE: ${REFRESH_TOKEN_LIFE}
+      EMAIL_SENDER: ${EMAIL_SENDER}
+      time_zone: ${time_zone}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_PROPERTIES_MAIL_SMTP_AUTH: ${MAIL_PROPERTIES_MAIL_SMTP_AUTH}
+      MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: ${MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE}
   frontend:
     build:
       dockerfile: ./digital-library-fe/Dockerfile
@@ -56,11 +60,5 @@ services:
       - frontend
       - backend
       - mysql_db
-
-
-
-
-
-
 
 

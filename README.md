@@ -67,7 +67,7 @@
 ``` docker build -t digital-library-frontend:1.0 .```
 
 ## 2. Run docker-compose
-``` docker-compose up -d ```
+``` docker compose -f docker-compose.yml up --build -d```
 
 ## 3. Access to application
 ``` http://localhost ```
