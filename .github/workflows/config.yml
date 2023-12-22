@@ -1,32 +1,25 @@
-# This is a basic workflow that is manually triggered
+name: Build and Publish
 
-name: Manual workflow
-
-# Controls when the action will run. Workflow runs when manually triggered using the UI
-# or API.
-on:
-  workflow_dispatch:
-    # Inputs the workflow accepts.
-    inputs:
-      name:
-        # Friendly description to be shown in the UI instead of 'name'
-        description: 'Person to greet'
-        # Default value if no value is explicitly provided
-        default: 'World'
-        # Input has to be provided for the workflow to run
-        required: true
-        # The data type of the input
-        type: string
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+version: 2.1
 jobs:
-  # This workflow contains a single job called "greet"
-  greet:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+  build:
+    docker:
+      - image: docker:latest
     steps:
-    # Runs a single command using the runners shell
-    - name: Send greeting
-      run: echo "Hello ${{ inputs.name }}"
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build and push database
+          command: |
+            pwd
+            cd mysql
+            docker build -t anhhoang2910/dbmysql:latest .
+            docker login -u ${username} -p ${password}
+            docker push anhhoang2910/dbmysql:latest
+workflows:
+  build-and-publish:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: main
