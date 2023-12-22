@@ -44,7 +44,7 @@ services:
     volumes:
         - mysql:/var/lib/mysql
     environment:
-        MYSQL_ROOT_PASSWORD: ${{env.MYSQL_ROOT_PASSWORD}}
+        MYSQL_ROOT_PASSWORD: $${{env.MYSQL_ROOT_PASSWORD}}
         MYSQL_DATABASE: ${{env.MYSQL_DATABASE}}
     ports:
         # - "127.0.0.1:3307:3306"
