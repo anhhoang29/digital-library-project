@@ -3,7 +3,7 @@ WORKDIR /app
 COPY digital-library-fe/package.json ./digital-library-fe/package.json
 RUN cd digital-library-fe && npm i --force
 COPY digital-library-fe ./digital-library-fe
-RUN cd digital-library-fe && npm run build --network-timeout 6000000
+RUN cd digital-library-fe && npm run build 
 WORKDIR /app/digital-library-fe
 
 

@@ -12,10 +12,10 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build the docker hub image
         run: |
-          echo "The ${{env.MYSQL_DATABASE}} event triggered this action."
+          echo "The ${MYSQL_DATABASE} event triggered this action."
           command: |
             pwd
             cd mysql
             docker build -t anhhoang2910/dbmysql:latest .
-            docker login -u ${{env.USERNAME}} -p ${{env.PASSWORD}
+            docker login -u ${USERNAME}} -p ${PASSWORD}
             docker push anhhoang2910/dbmysql:latest
