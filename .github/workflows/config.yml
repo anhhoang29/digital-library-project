@@ -16,12 +16,5 @@ jobs:
             pwd
             cd mysql
             docker build -t anhhoang2910/dbmysql:latest .
-            docker login -u ${username} -p ${password}
+            docker login -u ${{env.USERNAME}} -p ${{env.PASSWORD}
             docker push anhhoang2910/dbmysql:latest
-workflows:
-  build-and-publish:
-    jobs:
-      - build:
-          filters:
-            branches:
-              only: main
