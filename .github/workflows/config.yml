@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build the docker hub image
         run: |
-          echo "The ${{ env.MY_DATABASE }} event triggered this action."
+          echo "The ${{ env.MYSQL_DATABASE }} event triggered this action."
           command: |
             pwd
             cd mysql
