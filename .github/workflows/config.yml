@@ -4,12 +4,10 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-    
-version: 2.1
+
 jobs:
   build:
-    docker:
-      - image: docker:latest
+    runs-on: ubuntu-latest
     steps:
       - checkout
       - setup_remote_docker
