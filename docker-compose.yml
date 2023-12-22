@@ -20,7 +20,7 @@ services:
       REFRESH_TOKEN_LIFE: ${{env.REFRESH_TOKEN_LIFE}}
       EMAIL_SENDER: ${{env.EMAIL_SENDER}}
       time_zone: ${{env.time_zone}}
-      MAIL_HOST: ${{env.MAIL_HOST}}
+      MAIL_HOST: $${{env.MAIL_HOST}}
       MAIL_PORT: ${{env.MAIL_PORT}}
       MAIL_USERNAME: ${{env.MAIL_USERNAME}}
       MAIL_PASSWORD: ${{env.MAIL_PASSWORD}}
