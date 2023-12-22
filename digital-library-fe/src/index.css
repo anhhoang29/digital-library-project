@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Digital+Numbers:wght@400&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -16,11 +14,4 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
-} */
-
-/* .root {
-  width: 1440px;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
 } */

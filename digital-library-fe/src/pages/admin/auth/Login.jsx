@@ -14,7 +14,6 @@ import { emailRegrex } from "../../../utils/regrex";
 import { getProfile } from "../../../api/main/userAPI";
 import "./login-form.css";
 
-
 const LOGIN_URL = "/auth/login";
 
 const AdminLogin = () => {
