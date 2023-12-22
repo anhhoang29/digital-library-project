@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run:
-          name: Build and push database
+      - run: |
+          echo "The ${{ env.MY_DATABASE }} event triggered this action."
           command: |
             pwd
             cd mysql
