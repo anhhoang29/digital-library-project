@@ -10,22 +10,22 @@ services:
     build:
       dockerfile: ./digital-library/Dockerfile
     environment:
-      DATABASE_HOST: ${env.MYSQL_HOST}
-      DATABASE_PORT: ${env.MYSQL_PORT}
-      DATABASE_SCHEMA: ${env.MYSQL_DATABASE}
-      DATABASE_USERNAME: ${env.MYSQL_USER}
-      DATABASE_PASSWORD: ${env.MYSQL_PASSWORD}
-      ACCESS_TOKEN_LIFE: ${env.ACCESS_TOKEN_LIFE}
-      API_KEY: ${env.API_KEY}
-      REFRESH_TOKEN_LIFE: ${env.REFRESH_TOKEN_LIFE}
-      EMAIL_SENDER: ${env.EMAIL_SENDER}
-      time_zone: ${env.time_zone}
-      MAIL_HOST: ${env.MAIL_HOST}
-      MAIL_PORT: ${env.MAIL_PORT}
-      MAIL_USERNAME: ${env.MAIL_USERNAME}
-      MAIL_PASSWORD: ${env.MAIL_PASSWORD}
-      MAIL_PROPERTIES_MAIL_SMTP_AUTH: ${env.MAIL_PROPERTIES_MAIL_SMTP_AUTH}
-      MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: ${env.MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE}
+      DATABASE_HOST: ${MYSQL_HOST}
+      DATABASE_PORT: ${MYSQL_PORT}
+      DATABASE_SCHEMA: ${MYSQL_DATABASE}
+      DATABASE_USERNAME: ${MYSQL_USER}
+      DATABASE_PASSWORD: ${MYSQL_PASSWORD}
+      ACCESS_TOKEN_LIFE: ${ACCESS_TOKEN_LIFE}
+      API_KEY: ${API_KEY}
+      REFRESH_TOKEN_LIFE: ${REFRESH_TOKEN_LIFE}
+      EMAIL_SENDER: ${EMAIL_SENDER}
+      time_zone: ${time_zone}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_PROPERTIES_MAIL_SMTP_AUTH: ${MAIL_PROPERTIES_MAIL_SMTP_AUTH}
+      MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: ${MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE}
     ports:
       - "8080:8080"
     
@@ -33,8 +33,8 @@ services:
     build:
       dockerfile: ./digital-library-fe/Dockerfile
     environment:
-      REACT_APP_FE_URL: ${env.REACT_APP_FE_URL}
-      REACT_APP_API_URL: ${env.REACT_APP_API_URL}
+      REACT_APP_FE_URL: ${REACT_APP_FE_URL}
+      REACT_APP_API_URL: ${REACT_APP_API_URL}
     ports:
       - "3000:3000"
 
@@ -44,8 +44,8 @@ services:
     volumes:
         - mysql:/var/lib/mysql
     environment:
-        MYSQL_ROOT_PASSWORD: ${env.MYSQL_ROOT_PASSWORD}
-        MYSQL_DATABASE: ${env.MYSQL_DATABASE}
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
         - "3307:3306"
 
