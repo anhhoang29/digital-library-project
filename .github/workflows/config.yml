@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: |
+      - name: Build the docker hub image
+        run: |
           echo "The ${{ env.MY_DATABASE }} event triggered this action."
           command: |
             pwd
