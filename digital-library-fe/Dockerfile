@@ -1,12 +1,16 @@
-FROM node:14-alpine AS builder
+FROM node:18-alpine AS BUILD
 WORKDIR /app
-COPY . .
-RUN npm i
-RUN npm run build
-CMD ["npm", "start"]
+COPY digital-library-fe/package.json ./digital-library-fe/package.json
+RUN cd digital-library-fe && npm i --force
+COPY digital-library-fe ./digital-library-fe
+RUN cd digital-library-fe && npm run build --network-timeout 6000000
+WORKDIR /app/digital-library-fe
 
-FROM nginx:1.21.0-alpine AS production
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY --from=builder /app/build /usr/share/nginx/html
+
+FROM nginx:alpine
+COPY ./digital-library-fe/nginx.conf /etc/nginx/nginx.conf
+RUN rm -rf /usr/share/nginx/html/*
 EXPOSE 80
+COPY --from=BUILD /app/digital-library-fe/build /usr/share/nginx/html
 CMD ["nginx", "-g", "daemon off;"]
+
