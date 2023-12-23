@@ -10,8 +10,8 @@ import DocumentCard from "../../../components/student/card/Card";
 import { getUploadedDocumentsForGuest, getUploadedDocumentsForStudent } from "../../../api/main/documentAPI";
 import { getAUser } from "../../../api/main/userAPI";
 import usePrivateAxios from "../../../api/usePrivateAxios";
-import profileBackground from "../../../assets/images/profile_bg.webp";
 import profileImage from "../../../assets/images/default_profile.jpg";
+import profileBackground from "../../../assets/images/profile_bg.webp";
 
 import "../document/document.css";
 
@@ -119,7 +119,9 @@ const UserWall = () => {
 
                             <div className="mt-2 w-full">
                                 <div className="flex text-center font-bold">
-                                    <span className="block text-base font-normal text-green-400 dark:text-white cursor-pointer" onClick={() => navigate("/institutions/" + user.organization.slug)}>{user && user.organization && user.organization.orgName}</span>
+                                    <span className="block text-base font-normal text-green-400 dark:text-white cursor-pointer" onClick={() => navigate("/institutions/" + user.organization.slug)}>
+                                        {user && user.organization && user.organization.orgName}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -168,11 +170,7 @@ const UserWall = () => {
                             </p>
                         )}
 
-                        {documentList.length === 0 && (
-                            <p className="mb-4">
-                                Không có tài liệu nào dành cho bạn!
-                            </p>
-                        )}
+                        {documentList.length === 0 && <p className="mb-4">Không có tài liệu nào dành cho bạn!</p>}
 
                         <div className="grid grid-cols-3 gap-8 card-small w-full">
                             {documentList.map((document) => (
@@ -182,7 +180,7 @@ const UserWall = () => {
 
                         {documentList.length !== 0 && (
                             <div className="flex overflow-x-auto sm:justify-center mt-4">
-                                <Pagination previousLabel="Trước" nextLabel="Sau" currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} showIcons />
+                                <Pagination previousLabel="" nextLabel="" currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} showIcons />
                             </div>
                         )}
                     </div>

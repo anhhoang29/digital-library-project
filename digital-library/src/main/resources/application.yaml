@@ -6,11 +6,12 @@ EMAIL_SENDER: thuanmyhoa7a2@gmail.com
 server:
   servlet:
     context-path: /digital.library
+  forward-headers-strategy: framework
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    password: 123456
-    url: jdbc:mysql://localhost:3306/digital_library
+    password: eBE1a1e26g6c62A1D-ge2EcF3b6Dca-e
+    url: jdbc:mysql://viaduct.proxy.rlwy.net:25888/digital_library
     username: root
   devtools:
     restart:

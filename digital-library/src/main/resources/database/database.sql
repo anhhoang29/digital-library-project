@@ -2,8 +2,6 @@ drop database if exists digital_library;
 
 create database digital_library;
 
-USE digital_library;
-
 create table if not exists category
 (
     category_id   binary(16)  not null

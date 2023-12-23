@@ -9,7 +9,7 @@ import usePrivateAxios from "../../../api/usePrivateAxios";
 
 import DocumentCard from "../../../components/student/card/Card";
 
-import "./document.css"
+import "./document.css";
 
 const UploadedDocument = () => {
     usePrivateAxios();
@@ -112,7 +112,7 @@ const UploadedDocument = () => {
                 }, 2000);
             }
         } catch (error) {
-           navigate("/error-500");
+            navigate("/error-500");
         }
     };
 
@@ -325,7 +325,7 @@ const UploadedDocument = () => {
 
                                 {documentList.length !== 0 && (
                                     <div className="flex overflow-x-auto sm:justify-center mt-4">
-                                        <Pagination previousLabel="Trước" nextLabel="Sau" currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} showIcons />
+                                        <Pagination previousLabel="" nextLabel="" currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} showIcons />
                                     </div>
                                 )}
                             </div>

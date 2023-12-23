@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Select from "../../../components/management/select/Select";
 
-import { getAllCategories } from "../../../api/main/categoryAPI";
+import { getAccessibleCategories, getAllCategories } from "../../../api/main/categoryAPI";
 import { uploadNewDocument } from "../../../api/main/documentAPI";
-import { getAllFields } from "../../../api/main/fieldAPI";
+import { getAccessibleFields, getAllFields } from "../../../api/main/fieldAPI";
 import { getAccessibleOrganizations } from "../../../api/main/organizationAPI";
 import usePrivateAxios from "../../../api/usePrivateAxios";
 
@@ -56,7 +56,7 @@ const NewDocument = () => {
 
     const getCategoryList = async () => {
         try {
-            const response = await getAllCategories({
+            const response = await getAccessibleCategories({
                 params: {
                     page: 0,
                     size: 100,
@@ -73,7 +73,7 @@ const NewDocument = () => {
 
     const getFieldList = async () => {
         try {
-            const response = await getAllFields({
+            const response = await getAccessibleFields({
                 params: {
                     page: 0,
                     size: 100,
