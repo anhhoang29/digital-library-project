@@ -50,7 +50,7 @@ build/
 /digital-library-fe/yarn-error.log*
 /digital-library-fe/.env
 
-
+.env
 
 # nodejs server
 /nodejs-server/node_modules
