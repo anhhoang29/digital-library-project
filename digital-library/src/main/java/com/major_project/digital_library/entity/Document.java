@@ -96,10 +96,10 @@ public class Document {
         updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = new Timestamp(System.currentTimeMillis());
-    }
+//    @PreUpdate
+//    protected void onUpdate() {
+//        updatedAt = new Timestamp(System.currentTimeMillis());
+//    }
 
     @PreRemove
     protected void onRemove() {

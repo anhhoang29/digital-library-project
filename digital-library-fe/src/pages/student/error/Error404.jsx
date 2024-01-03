@@ -24,7 +24,7 @@ const Error404 = () => {
                         <button
                             class="px-4 rounded-full shadow-lg inline py-3 text-sm font-medium leading-5 shadow text-green-400 transition-colors duration-150 border border-transparent focus:outline-none focus:shadow-outline-green bg-white active:bg-green-500 hover:bg-green-400 hover:text-white"
                             onClick={() => navigate("/home")}>
-                            Back to homepage
+                            Quay về trang chủ
                         </button>
                     </div>
                     <div class="w-2/5">
